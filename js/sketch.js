@@ -6,6 +6,14 @@ let color = 0;
 let sliders = [];
 let sliderValues = [];
 
+let count = 0;
+let xLightning1 = 0;
+let xLightning2 = 0;
+let yLightning1 = 0;
+let yLightning2 = 0;
+
+let strikeThreshold = 95;
+
 function setupSliders() {
     sliders.push(document.getElementById("slider1")); // 0 = Work Slider
     sliders.push(document.getElementById("slider2")); // 1 = Sleep Slider
@@ -18,7 +26,7 @@ function setupSliders() {
         sliderValues.push(sliders[i].value);
         sliders[i].oninput = function() {
             sliderValues[i] = this.value;
-            //console.log("Slider " + (i + 1) + " value: " + sliderValues[i]);
+            console.log("Slider " + (i + 1) + " value: " + sliderValues[i]);
         }
     }
 }
@@ -35,10 +43,14 @@ function setup() {
 
 // 
 function draw() {
-    background(255); // background = white 
+    clear();
+    if (strikeChance() > strikeThreshold)
+        lightningFlash();
+    else
+        background(0);
     stroke(0); // building outline = black
-    strokeWeight(3); 
-    
+    strokeWeight(3);
+
     let x = 10; // X position for the first building
     let ground = height - 50; // ground line position 
     
@@ -96,4 +108,29 @@ function drawWindows(x, y, w, h) {
 function windowResized() {
     resizeCanvas(canvasContainer.width(), canvasContainer.height());
     redraw();
+}
+
+function mousePressed() {
+    console.log(strikeChance());
+}
+
+function strikeChance() {
+    let workWeight = int(random(0, sliderValues[0])) / 2;
+    let sleepWeight = int(random(100 - sliderValues[1], 100)) / 2;
+    return workWeight + sleepWeight;
+}
+
+function lightningFlash() {
+    background(100);
+    xLightning2 = int(random(0, width));
+    yLightning2 = 0;
+
+    stroke(255, 255, random(0, 255));
+    for (let i = 0; i < 50; i++) {
+        xLightning1 = xLightning2;
+        yLightning1 = yLightning2;
+        xLightning2 += int(random(-20, 20));
+        yLightning2 += int(random(5, 20));
+        line(xLightning1, yLightning1, xLightning2, yLightning2);
+    }
 }
